@@ -118,14 +118,7 @@ void FlappyBird()
 {
     // put your main code here, to run repeatedly:
  //   resetMaxScore();
-    EEPROM.begin(512); 
-    maxScore = EEPROM.read(1);
-    if (maxScore == 255) {
-      maxScore = 0;
-      EEPROM.write(1,score);
-      EEPROM.commit();
-    }
-    EEPROM.end();
+
     game_start();
     game_loop();
     game_over();
@@ -351,10 +344,8 @@ void game_over()
 {
     ttgo->tft->fillScreen(TFT_BLACK);
     if (score > maxScore) {
-        EEPROM.begin(512); 
-        EEPROM.write(1,score);
-        EEPROM.commit();
-        EEPROM.end();
+        maxScore = score;
+        Sauvegarde_config();
         ttgo->tft->setTextColor(TFT_RED);
         ttgo->tft->setTextSize(2);
         ttgo->tft->setCursor( TFTW2 - (13 * 6), TFTH2 - 26);

@@ -41,17 +41,19 @@ int testWifi = 20;
       struct tm timeinfo;
       if (!getLocalTime(&timeinfo)) {
           ttgo->tft->println("Failed to obtain time, Restart in 3 seconds");
-          Serial.println("Failed to obtain time, Restart in 3 seconds");
+          Serial.println("Failed to obtain time");
           delay(3000);
           //esp_restart();
           while (1);
+      } 
+      else {
+         ttgo->tft->println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+         ttgo->tft->println("Time synchronization succeeded");
+         // Sync local time to external RTC
+         ttgo->rtc->syncToRtc();
       }
-      //Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-      ttgo->tft->println("Time synchronization succeeded");
-      // Sync local time to external RTC
-      rtc->syncToRtc();
     }
-    else ttgo->tft->println("\ERROR\n");
+    else ttgo->tft->println("\n ERROR\n");
 
     int16_t x, y;
     while (!ttgo->getTouch(x, y)) {} // Wait for touch

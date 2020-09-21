@@ -1,10 +1,16 @@
-
+#include <EEPROM.h>
+/*
+ *           Gestion du buzzer
+ */
 void quickBuzz () {
   digitalWrite (4, HIGH);
   delay (200);
   digitalWrite (4, LOW);
 }
 
+/*
+ *           Gestion de l'énergie, passage du mode basse à haute énergie.
+ */
 
 void low_energy()
 {
@@ -35,10 +41,6 @@ void normal_energy()  {
    WaitingForLowEnergy = TimeToWaitForLowEnergy;
    ttgo->displayWakeup();
    ttgo->rtc->syncToSystem();
-   //     updateStepCounter(ttgo->bma->getCounter());
-   //     updateBatteryLevel();
-   //     updateBatteryIcon(LV_ICON_CALCULATION);
-   //     lv_disp_trig_activity(NULL);
     ttgo->openBL();
     ttgo->bma->enableStepCountInterrupt();
     setCpuFrequencyMhz(160);
@@ -46,3 +48,32 @@ void normal_energy()  {
     ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
     displayTime(true);
  }
+
+/*
+ *         Gestion des paramètres à sauvegarder.
+ */
+
+void Sauvegarde_config(){
+  EEPROM.begin(512); 
+  EEPROM.write(1,maxScore);                    // Emplacement 1 = score max de Flappy Bird
+  EEPROM.write(3,TimeToWaitForLowEnergy);      // Emplacement 3 = temps d'affichage avant mise en veille
+  EEPROM.commit();
+  EEPROM.end();
+}
+
+void Lecture_config(){
+    EEPROM.begin(512); 
+    maxScore = EEPROM.read(1);
+    if (maxScore == 255) {
+      maxScore = 0;
+      EEPROM.write(1,maxScore);
+    }
+    TimeToWaitForLowEnergy = EEPROM.read(3);
+    if (TimeToWaitForLowEnergy == 255) {
+      TimeToWaitForLowEnergy = 20;
+      EEPROM.write(3,TimeToWaitForLowEnergy);
+    }
+    EEPROM.commit();
+    EEPROM.end();
+}
+ 

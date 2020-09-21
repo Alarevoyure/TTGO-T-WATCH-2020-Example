@@ -1,7 +1,3 @@
-// An advanced Time Display
-// This is a drop-in replacement for the displayTime()
-// In the original Instructable. s such, it redraws GUI
-// every minute so you will see a little flicker.
 
 int xpos;
 
@@ -36,9 +32,9 @@ void displayTime(boolean fullUpdate) {
     ttgo->tft->fillRoundRect(0, 130, 239, 109, 40, TFT_MAROON);
     ttgo->tft->fillRoundRect(40, 150, 199, 88, 20, TFT_BLACK);
     ttgo->tft->fillRect(0, 179, 50, 10, TFT_BLACK);
-    ttgo->tft->fillRect(100, 160, 40, 10, TFT_YELLOW);
-    ttgo->tft->fillRect(140, 160, 40, 10, TFT_DARKGREEN);
-    ttgo->tft->fillRect(180, 160, 40, 10, TFT_GREEN);
+    ttgo->tft->fillRect(100, 160, 60, 10, TFT_YELLOW);
+    ttgo->tft->fillRect(160, 160, 40, 10, TFT_DARKGREEN);
+    ttgo->tft->fillRect(200, 160, 20, 10, TFT_GREEN);
     ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     ttgo->tft->drawString("Pas", 70, 158, 2);
     ttgo->tft->fillRoundRect(119, 210, 120, 29, 15, TFT_DARKCYAN);
@@ -73,7 +69,7 @@ void displayTime(boolean fullUpdate) {
   // Affichage de la date
   //ttgo->tft->setTextSize(1);
   ttgo->tft->setTextColor(TFT_GREENYELLOW);
-  ttgo->tft->drawString(String(dday), 50, 188, 4);
+  ttgo->tft->drawString(String(dday), 50, 188, 6);
   
   // Draw Month
   String mStr;

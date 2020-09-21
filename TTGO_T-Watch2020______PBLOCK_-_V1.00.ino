@@ -21,6 +21,7 @@ BMA *sensor;
 bool lenergy = false;                   // passe à 1 si en mode économie
 bool irq = false;                       // Avons nous reçu une IRQ d'un des capteurs ?
 bool isDoubleClick = false;
+bool KeyPressed = false;
 int maxScore=0;                         // Scrore de Flappy Bird 
 
 uint32_t targetTime = 0;                // for next 1 second display update
@@ -42,8 +43,7 @@ void setup()
     ttgo->tft->setTextFont(1);
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->setTextColor(TFT_YELLOW, TFT_BLACK); // Note: the new fonts do not draw the background colour
-    //LVGL is not used, this line is not needed
-    // ttgo->lvgl_begin();
+    Lecture_config();                               // Lecture de la config sauvegardée en mémoire.
 
     //Receive objects for easy writing
     sensor = ttgo->bma;
@@ -60,6 +60,9 @@ void setup()
 
     pinMode (4, OUTPUT);  // Activer le buzzer
     quickBuzz ();
+
+    ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+    
 /*********************************************************************************
  *                 Spécifique accéléromètre
  *                
@@ -114,13 +117,14 @@ void loop()
            while (ttgo->getTouch(x, y)) {} // wait for user to release
            Serial.print("x="); Serial.println(x);
            Serial.print("y="); Serial.println(y);
-           if (x>40 && x<80 && y>178 && y<240 ) lv_ex_calendar_1();     // Afficher le calendrier si on clique sur la date
+           if (x>0 && x<80 && y>178 && y<240 ) lv_ex_calendar_1();     // Afficher le calendrier si on clique sur la date
            else {
               switch (lv_ex_btnmatrix_1()) { // Call modeMenu. The return is the desired app number
               case 0: // Zero is the clock, just exit the switch
+                  config_affichage();   // Dans LVGL_Routines
                   break;
               case 1:
-                  appWifi();
+                  appWifi(); 
                   break;
               case 2:
                   appBattery();
@@ -141,7 +145,7 @@ void loop()
  *                    Que faire en cas d'interruption ?
  */
    if (irq) {
-     Serial.println("Réception IRQ");
+     //Serial.println("Réception IRQ");
      irq = 0;
      bool  rlst;
      do {
@@ -156,12 +160,12 @@ void loop()
      }
      if (sensor->isTilt()) {
         normal_energy(); 
-        Serial.println("Tilt");
+        //Serial.println("Tilt");
      }
      if (sensor->isDoubleClick()) {
         normal_energy(); 
         isDoubleClick = true;
-        Serial.println("isDoubleClick");
+        //Serial.println("isDoubleClick");
      }
      delay(200);
   }
