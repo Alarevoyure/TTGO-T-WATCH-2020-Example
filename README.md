@@ -18,3 +18,5 @@ Je trouve cette montre extraordianire pour le prix !
 J'espère que mon travail pourra en aider certain.
 Bonne programmation.
 /
+
+Une fois installé, le programme est en mesure de se mettre à jour seul depuis un repository sur mes serveurs.
