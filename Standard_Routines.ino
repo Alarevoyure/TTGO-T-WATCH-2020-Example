@@ -298,7 +298,7 @@ void GetMeteoInfo() {
   int httpCode;
   const size_t bufferSize = 2048;  // Buffer pour le traitement JSON des données OpenWeatherMap
  
-   URLOpenWeather = "http://api.openweathermap.org/data/2.5/weather?q=HONDSCHOOTE,FR&APPID=6e20072f2cd2e473d0b7e9516f50fd92&units=metric";
+   URLOpenWeather = "http://api.openweathermap.org/data/2.5/weather?q=PARIS,FR&APPID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&units=metric";
    http.begin(URLOpenWeather);
    httpCode = http.GET();
    
