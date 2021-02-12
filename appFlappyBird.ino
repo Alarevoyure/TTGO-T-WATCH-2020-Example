@@ -23,8 +23,8 @@
 #define BIRDW2            8     // half width
 #define BIRDH2            8     // half height
 // pipe size
-#define PIPEW            24     // pipe width
-#define GAPHEIGHT        68     // pipe gap height  =  42
+#define PIPEW            22     // pipe width
+#define GAPHEIGHT        68     // pipe gap height  =  42   68
 // floor size
 #define FLOORH           30     // floor height (from bottom of the screen)
 // grass size
@@ -99,36 +99,15 @@ void game_loop();
 void game_over();
 void game_init();
 
-/*
-void setup()
-{
-    Serial.begin(115200);
-    ttgo = TTGOClass::getWatch();
-    ttgo->begin();
-    ttgo->openBL();
-    tft = ttgo->tft;
-    resetMaxScore();
-    // while (1) {
-    //     Serial.println(ttgo->touched());
-    // }
-}
-*/
-
 void FlappyBird()
 {
-    // put your main code here, to run repeatedly:
- //   resetMaxScore();
-
+    setCpuFrequencyMhz(240);
     game_start();
     game_loop();
     game_over();
+    setCpuFrequencyMhz(80);
 }
 
-
-
-// ---------------
-// game loop
-// ---------------
 void game_loop()
 {
     // ===============
