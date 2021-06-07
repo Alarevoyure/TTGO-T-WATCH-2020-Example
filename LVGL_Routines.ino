@@ -35,7 +35,7 @@ uint8_t lv_ex_menuPrincipal(void)
     static const char * btnm_map[] = {"Affichage", "Wifi", "\n",
                                      "Batterie", "Alarme", "\n",
                                      "Jeux", "Calc", "Météo", "\n",
-                                     "Niveau", "Quitter", ""};
+                                     "Sport","Niveau", "Quit", "" };
                                   
     KeyPressed = false;
     lv_obj_t * btnm1 = lv_btnmatrix_create(lv_scr_act(), NULL);

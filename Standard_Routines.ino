@@ -31,10 +31,10 @@ void low_energy()
     ttgo->displaySleep();
     
     lenergy = true;
-    if (displayTheme!=2) {        //Si thème 2, on garde le Wifi allumé.
-      WiFi.mode(WIFI_OFF);
-      WifiConnected = false;
-    }
+    WiFi.mode(WIFI_OFF);
+  //  esp_wifi_stop();
+    esp_bt_controller_disable();
+    WifiConnected = false;
     if (oldhh!=hh) {
       oldhh=hh;
       FreshOpenWeather=false;
@@ -43,7 +43,7 @@ void low_energy()
     gpio_wakeup_enable ((gpio_num_t)AXP202_INT, GPIO_INTR_LOW_LEVEL);
     gpio_wakeup_enable ((gpio_num_t)RTC_INT, GPIO_INTR_LOW_LEVEL);
     gpio_wakeup_enable ((gpio_num_t)BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
-    //ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, false); 
+    ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, false); 
     esp_sleep_enable_gpio_wakeup ();
     esp_light_sleep_start();
   }
@@ -55,7 +55,7 @@ void normal_energy()  {
       WaitingForLowEnergy = 3;                   // et on limite le temps d'affichage.
     } else setCpuFrequencyMhz(160);              // sinon, on augmente la fréquence. 
     
-    //ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+    ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
     //ttgo->startLvglTick();                       // Redémarrer le superviseur LVGL
     //Serial.println("ENTER IN NORMAL MODE");
     WaitingForLowEnergy = TimeToWaitForLowEnergy;
@@ -65,7 +65,6 @@ void normal_energy()  {
     //ttgo->bma->enableStepCountInterrupt();
     lenergy = false;
     displayTime(true);
-    //WiFi.mode(WIFI_ON);
 }
 
 /*
@@ -298,7 +297,7 @@ void GetMeteoInfo() {
   int httpCode;
   const size_t bufferSize = 2048;  // Buffer pour le traitement JSON des données OpenWeatherMap
  
-   URLOpenWeather = "http://api.openweathermap.org/data/2.5/weather?q=PARIS,FR&APPID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&units=metric";
+   URLOpenWeather = "http://api.openweathermap.org/data/2.5/weather?q=HONDSCHOOTE,FR&APPID=6e20072f2cd2e473d0b7e9516f50fd92&units=metric";
    http.begin(URLOpenWeather);
    httpCode = http.GET();
    
@@ -321,7 +320,7 @@ void GetMeteoInfo() {
             strcpy(OpenWeatherDescription, root["weather"][0]["description"]);
             strcpy(OpenWeatherIconID, root["weather"][0]["icon"]);
             strcpy(OpenWeatherID, root["weather"][0]["id"]);
-            FreshOpenWeather = 1;
+            FreshOpenWeather = true;
          }
       }
    } else {
@@ -329,4 +328,61 @@ void GetMeteoInfo() {
       FreshOpenWeather = 0;
    }
    http.end();
+}
+
+
+
+/*****************************************************************************************************
+ *                                                BLE
+ */
+
+class MyServerCallback: public BLEServerCallbacks {
+  void onConnect(BLEServer* pServer) {
+    //todo display `connected` on the screen
+    Serial.println("LE onConnect");
+    BLEConnected = true;
+  }
+  
+  void onDisconnect(BLEServer* pServer) {
+    // todo display `disconnected` on the screen
+    Serial.println("LE onDisconnect");
+    BLEConnected = false;
+  }
+};
+
+
+ void setupBLEServer() {
+  //init BLE server
+  BLEDevice::init("T-WATCH");
+  BLEServer *pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallback());
+  // Alert Display Service
+  BLEService *pService = pServer->createService( ALERT_DISPLAY_SERVICE_UUID );
+
+  BLECharacteristic* pCharacteristic = pService->createCharacteristic(
+                                          DISPLAY_MESSAGE_CHARACTERISTIC_UUID,
+                                          BLECharacteristic::PROPERTY_WRITE
+                                          );
+  pCharacteristic->setWriteProperty(true);
+
+//  BLECharacteristic* pCharacteristicText = new BLECharacteristic(DISPLAY_MESSAGE_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_WRITE_NR); //Request MTU=500 from client
+//  pCharacteristicText->setCallbacks(new DisplayCharacteristicCallback());
+//  pService->addCharacteristic(pCharacteristicText);
+
+  // Display Time Characteristic
+//  BLECharacteristic* pCharacteristicTime = new BLECharacteristic(DISPLAY_TIME_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_WRITE_NR);
+//  pCharacteristicTime->setCallbacks(new TimeCharacteristicCallback());
+//  pService->addCharacteristic(pCharacteristicTime); 
+
+  // Change Display Orientation
+//  BLECharacteristic* pCharacteristicDisplayOrientation = new BLECharacteristic(DISPLAY_DISPLAY_ORIENTATION_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_WRITE_NR);
+//  pCharacteristicDisplayOrientation->setCallbacks(new DisplayOrientationCharacteristicCallback());
+//  pService->addCharacteristic(pCharacteristicDisplayOrientation); 
+
+  pService->start();
+     
+  BLEAdvertising *pAdvertising = pServer->getAdvertising();
+  // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.gap.appearance.xml
+  pAdvertising->setAppearance(GENERIC_DISPLAY); //Generic Display
+  pAdvertising->start();
 }

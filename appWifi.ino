@@ -84,7 +84,7 @@ uint8_t appWifi(void)
 {
     TimeToWait = millis() + 10000;   // 10 seconde maxi dans le menu, sinon, on quitte.
     
-    static const char * btnm_map[] = {"Configuration Wifi", "\n",
+    static const char * btnm_map[] = {"Scan", "Configuration", "\n",
                                       "Synchro", "MaJ", "\n",
                                       "Quitter", ""};
                                   
@@ -135,7 +135,8 @@ uint8_t SynchroWifi(char * wifi_ssid, char * wifi_pass){
        if (testWifi) {
           strcat(txt_log,"\nConnexion reussie.\n");
           lv_label_set_text(txt, txt_log); lv_task_handler(); 
-          configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+          configTzTime("CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00", ntpServer);
+          //configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
           delay(1000);
           if (!getLocalTime(&timeinfo)) {
              lv_label_set_text(txt, "Connexion au serveur.\nde temps impossible"); lv_task_handler(); 
@@ -195,13 +196,14 @@ uint8_t MiseAJourWifi(char * wifi_ssid, char * wifi_pass){
        if (testWifi) {
           strcat(txt_log,"\nConnexion WIFI reussie.\n");
           lv_label_set_text(txt, txt_log); lv_task_handler(); 
-          configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+          configTzTime("CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00", ntpServer);
+          //configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
           delay(1000);
           strcat(txt_log,"Connexion au serveur...\n"); 
           lv_label_set_text(txt, txt_log); lv_task_handler(); 
 
           //Vérification de la version dans le repository
-          http.begin("http://w2.ferme201.fr/download/ttgo/version.info");
+          http.begin("http://store.ferme201.fr/download/ttgo/version.info");
           httpCode = http.GET();
           if (httpCode > 0) {
              if (httpCode == HTTP_CODE_OK) {
@@ -218,7 +220,7 @@ uint8_t MiseAJourWifi(char * wifi_ssid, char * wifi_pass){
                   Sauvegarde_config();
                   strcat(txt_log, "\nMise a jour en cours\n");
                   lv_label_set_text(txt, txt_log); lv_task_handler(); 
-                  t_httpUpdate_return ret = ESPhttpUpdate.update("http://w2.ferme201.fr/download/ttgo/ttgo.bin");
+                  t_httpUpdate_return ret = ESPhttpUpdate.update("http://store.ferme201.fr/download/ttgo/ttgo.bin");
                   switch(ret) {
                      case HTTP_UPDATE_FAILED:
                         strcat(txt_log, "HTTP_UPDATE_FAILD Error\n");

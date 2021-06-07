@@ -239,9 +239,6 @@ void displayAnalogTime(boolean fullUpdate) {
   ttgo->tft->setTextColor(TFT_YELLOW, TFT_DARKCYAN);
   ttgo->tft->drawNumber(step, 170, 215, 2);   // Afficher le nombre de pas.
     
- // if (ss % 2) ttgo->tft->setTextColor(0xE0, TFT_BLACK);    // permet de faire clignoter les : de l'heure.
- // else  ttgo->tft->setTextColor(0xFBE0, TFT_BLACK);
- // ttgo->tft->drawChar(':', 122, 35, 7);
   ttgo->tft->setTextColor(0xFBE0, TFT_BLACK);             // Puis, afficher les secondes
   ttgo->tft->setTextSize(1);
   xpos = 204;
@@ -283,7 +280,7 @@ void displayAnalogTime(boolean fullUpdate) {
      ttgo->tft->fillRoundRect(3, 26, 237, 64, 5, BckColor1);
      ttgo->tft->fillRoundRect(3, 96, 237, 64, 5, BckColor2);
      ttgo->tft->fillRoundRect(3, 166, 237, 64, 5, BckColor3);
-     if (!WifiConnected) WiFi.begin(ssid, passwifi);
+     if (!WifiConnected && !FreshOpenWeather) WiFi.begin(ssid, passwifi);
   }
 
   ttgo->tft->setTextColor(0xFBE0, BckColor1);
