@@ -2,7 +2,7 @@
 //
 // Personalized by Paul BLOCK
 // This is a French version
-// Version 1.00  -  17 Septembre 2020
+// Version 1.10  -  mai 2021
 
 
 #include "config.h"
